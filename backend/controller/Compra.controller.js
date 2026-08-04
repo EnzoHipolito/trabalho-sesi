@@ -34,9 +34,8 @@ const atualizar = async (req, res) => {
     const valores = req.body
     const codCompra = req.params.codCompra
 
-    const getCompra = await Compra.findByPk({where: {codCompra: codCompra}})
-
     try{
+        const getCompra = await Compra.findByPk(codCompra)
 
         if(!getCompra){
             return res.status(404).json({message: 'Compra não encontrado'})
@@ -56,7 +55,7 @@ const consultarPorPk = async (req, res) => {
 
     
     try{
-        const getCompra = await Compra.findByPk({where: {codCompra: codCompra}})
+        const getCompra = await Compra.findByPk(codCompra)
 
         if(!getCompra){
             return res.status(404).json({message: 'Compra não encontrado'})

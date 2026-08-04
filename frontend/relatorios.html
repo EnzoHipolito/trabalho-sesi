@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Relatórios</title>
+    <link rel="stylesheet" href="css/style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels" defer></script>
+</head>
+<body>
+    <header class="navbar">
+        <div class="brand">Sistema de Compras</div>
+        <nav>
+            <a href="index.html">Dashboard</a>
+            <a href="usuarios.html">Usuários</a>
+            <a href="produtos.html">Produtos</a>
+            <a href="catalogo.html">Catálogo</a>
+            <a href="compras.html">Compras</a>
+            <a href="relatorios.html" class="active">Relatórios</a>
+        </nav>
+    </header>
+
+    <main class="container">
+        <h1>Relatórios</h1>
+
+        <div class="card" style="margin-bottom: 24px;">
+            <h2 style="font-size: 18px; margin-bottom: 12px;">Volume de Compras por Categoria</h2>
+            <button class="btn-primary" id="gerar_grafico_volume">Gerar Gráfico</button>
+            <p id="resposta_volume" style="margin: 12px 0; font-weight: bold;">Clique no botão para renderizar...</p>
+            <div style="height: 400px;">
+                <canvas id="graf_volume"></canvas>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2 style="font-size: 18px; margin-bottom: 12px;">Produtos Críticos</h2>
+            <button class="btn-primary" id="gerar_grafico_criticos">Gerar Gráfico</button>
+            <p id="resposta_criticos" style="margin: 12px 0; font-weight: bold;">Clique no botão para renderizar...</p>
+            <div style="height: 400px;">
+                <canvas id="graf_criticos"></canvas>
+            </div>
+        </div>
+    </main>
+
+    <script src="js/relatorios.js" defer></script>
+</body>
+</html>

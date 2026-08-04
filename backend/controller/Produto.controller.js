@@ -35,15 +35,14 @@ const apagar = async (req, res) => {
 const atualizar = async (req, res) => {
     const valores = req.body
     const codProduto = req.params.codProduto
-    
-    const getProduto = await Produto.findByPk({where: {codProduto: codProduto}})
-    
+
     try{
-        
+        const getProduto = await Produto.findByPk(codProduto)
+
         if(!getProduto){
             return res.status(404).json({message: 'Produto não encontrado'})
         }
-        
+
         await Produto.update(valores, {where: {codProduto: codProduto}})
         
         res.status(201).json({message: 'Produto atualizado com sucesso!'})
@@ -59,12 +58,12 @@ const consultarPorPk = async (req, res) => {
     
     
     try{
-        const getProduto = await Produto.findByPk({where: {codProduto: codProduto}})
-        
+        const getProduto = await Produto.findByPk(codProduto)
+
         if(!getProduto){
             return res.status(404).json({message: 'Produto não encontrado'})
         }
-        
+
         res.status(201).json({getProduto})
     }
     catch(err){

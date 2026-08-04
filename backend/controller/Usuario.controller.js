@@ -35,9 +35,8 @@ const atualizar = async (req, res) => {
     const valores = req.body
     const codUsuario = req.params.codUsuario
 
-    const getUsuario = await Usuario.findByPk({where: {codUsuario: codUsuario}})
-
     try{
+        const getUsuario = await Usuario.findByPk(codUsuario)
 
         if(!getUsuario){
             return res.status(404).json({message: 'Usuario não encontrado'})
@@ -54,10 +53,9 @@ const atualizar = async (req, res) => {
 
 const consultarPorPk = async (req, res) => {
     const codUsuario = req.params.codUsuario
-
     
     try{
-        const getUsuario = await Usuario.findByPk({where: {codUsuario: codUsuario}})
+        const getUsuario = await Usuario.findByPk(codUsuario)
 
         if(!getUsuario){
             return res.status(404).json({message: 'Usuario não encontrado'})
@@ -73,7 +71,6 @@ const consultarPorPk = async (req, res) => {
 const consultarPorNome = async (req, res) => {
     const nome = req.params.nome
 
-    
     try{
         const getUsuario = await Usuario.findOne({where: {nome: nome}})
 
@@ -103,4 +100,4 @@ const listar = async (req, res) => {
     }
 }
 
-module.exports = { consultarPorPk, listar, cadastrar, apagar, atualizar }
+module.exports = { consultarPorPk, listar, cadastrar, apagar, atualizar, consultarPorNome }

@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Compras</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <header class="navbar">
+        <div class="brand">Sistema de Compras</div>
+        <nav>
+            <a href="index.html">Dashboard</a>
+            <a href="usuarios.html">Usuários</a>
+            <a href="produtos.html">Produtos</a>
+            <a href="catalogo.html">Catálogo</a>
+            <a href="compras.html" class="active">Compras</a>
+            <a href="relatorios.html">Relatórios</a>
+        </nav>
+    </header>
+
+    <main class="container">
+        <h1>Compras</h1>
+        <div id="alertBox" class="alert"></div>
+
+        <div class="toolbar">
+            <div class="search-box">
+                <input type="number" id="buscaId" placeholder="Buscar por ID...">
+                <button class="btn-secondary" id="btnBuscar">Buscar</button>
+                <button class="btn-secondary" id="btnLimparBusca">Limpar</button>
+            </div>
+            <button class="btn-primary" id="btnNovo">+ Nova Compra</button>
+        </div>
+
+        <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Usuário</th>
+                        <th>Produto</th>
+                        <th>Tipo</th>
+                        <th>Qtde</th>
+                        <th>Preço Final</th>
+                        <th>Pagamento</th>
+                        <th>Status</th>
+                        <th>Data</th>
+                        <th>Ações</th>
+                    </tr>
+                </thead>
+                <tbody id="tabelaCompras">
+                    <tr class="empty-row"><td colspan="10">Carregando...</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </main>
+
+    <div class="modal-overlay" id="modalOverlay">
+        <div class="modal">
+            <h2 id="modalTitulo">Nova Compra</h2>
+            <form id="formCompra">
+                <input type="hidden" id="codCompra">
+                <div class="form-grid">
+                    <div class="form-field">
+                        <label>Usuário</label>
+                        <select id="idUsuario" required></select>
+                    </div>
+                    <div class="form-field">
+                        <label>Produto</label>
+                        <select id="idProduto" required></select>
+                    </div>
+                    <div class="form-field">
+                        <label>Tipo</label>
+                        <select id="tipo" required>
+                            <option value="ENTRADA">ENTRADA</option>
+                            <option value="SAIDA">SAIDA</option>
+                        </select>
+                    </div>
+                    <div class="form-field">
+                        <label>Quantidade</label>
+                        <input type="number" id="qtdeMov" min="1" required>
+                    </div>
+                    <div class="form-field">
+                        <label>Preço Unitário</label>
+                        <input type="number" id="precoUnit" step="0.01" min="0" required>
+                    </div>
+                    <div class="form-field">
+                        <label>Desconto (%)</label>
+                        <input type="number" id="desconto" step="0.01" min="0" max="100" required>
+                    </div>
+                    <div class="form-field">
+                        <label>Preço Final</label>
+                        <input type="number" id="precoFinal" step="0.01" min="0" required>
+                    </div>
+                    <div class="form-field">
+                        <label>Forma de Pagamento</label>
+                        <select id="formaPagamento" required>
+                            <option value="DEBITO">DEBITO</option>
+                            <option value="CREDITO">CREDITO</option>
+                            <option value="DINHEIRO">DINHEIRO</option>
+                        </select>
+                    </div>
+                    <div class="form-field">
+                        <label>Status</label>
+                        <select id="statusCompra" required>
+                            <option value="PENDENTE">PENDENTE</option>
+                            <option value="PAGA">PAGA</option>
+                        </select>
+                    </div>
+                    <div class="form-field">
+                        <label>Data</label>
+                        <input type="date" id="data" required>
+                    </div>
+                </div>
+                <div class="modal-actions">
+                    <button type="button" class="btn-secondary" id="btnCancelar">Cancelar</button>
+                    <button type="submit" class="btn-success">Salvar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="js/api.js"></script>
+    <script src="js/compras.js"></script>
+</body>
+</html>

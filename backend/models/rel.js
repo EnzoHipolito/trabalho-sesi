@@ -9,7 +9,7 @@ Usuario.hasMany(Compra, {
 })
 
 Compra.belongsTo(Usuario, {
-    foreignKey: 'idProduto',
+    foreignKey: 'idUsuario',
     as: 'usuarioCompra',
     allowNull: false
 })

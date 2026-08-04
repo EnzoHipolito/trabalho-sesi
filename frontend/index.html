@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <header class="navbar">
+        <div class="brand">Sistema de Compras</div>
+        <nav>
+            <a href="index.html" class="active">Dashboard</a>
+            <a href="usuarios.html">Usuários</a>
+            <a href="produtos.html">Produtos</a>
+            <a href="catalogo.html">Catálogo</a>
+            <a href="compras.html">Compras</a>
+            <a href="relatorios.html">Relatórios</a>
+        </nav>
+    </header>
+
+    <main class="container">
+        <h1>Dashboard</h1>
+
+        <div class="cards">
+            <div class="card">
+                <div class="label">Usuários cadastrados</div>
+                <div class="value" id="totalUsuarios">-</div>
+            </div>
+            <div class="card">
+                <div class="label">Produtos cadastrados</div>
+                <div class="value" id="totalProdutos">-</div>
+            </div>
+            <div class="card">
+                <div class="label">Compras registradas</div>
+                <div class="value" id="totalCompras">-</div>
+            </div>
+            <div class="card">
+                <div class="label">Total pago (R$)</div>
+                <div class="value" id="totalPago">-</div>
+            </div>
+        </div>
+
+        <h1>Últimas compras</h1>
+        <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Usuário</th>
+                        <th>Produto</th>
+                        <th>Tipo</th>
+                        <th>Qtde</th>
+                        <th>Preço Final</th>
+                        <th>Status</th>
+                        <th>Data</th>
+                    </tr>
+                </thead>
+                <tbody id="ultimasCompras">
+                    <tr class="empty-row"><td colspan="8">Carregando...</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </main>
+
+    <script src="js/api.js"></script>
+    <script src="js/dashboard.js"></script>
+</body>
+</html>

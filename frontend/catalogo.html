@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Catálogo</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <header class="navbar">
+        <div class="brand">Sistema de Compras</div>
+        <nav>
+            <a href="index.html">Dashboard</a>
+            <a href="usuarios.html">Usuários</a>
+            <a href="produtos.html">Produtos</a>
+            <a href="catalogo.html" class="active">Catálogo</a>
+            <a href="compras.html">Compras</a>
+            <a href="relatorios.html">Relatórios</a>
+        </nav>
+    </header>
+
+    <main class="container">
+        <h1>Catálogo de Produtos</h1>
+
+        <div class="filters">
+            <select id="filtroCategoria">
+                <option value="">Todas as categorias</option>
+            </select>
+        </div>
+
+        <div class="catalog-grid" id="catalogGrid">
+            <p>Carregando...</p>
+        </div>
+    </main>
+
+    <script src="js/api.js"></script>
+    <script src="js/catalogo.js"></script>
+</body>
+</html>

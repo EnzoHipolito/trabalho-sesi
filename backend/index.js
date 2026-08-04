@@ -6,6 +6,7 @@ const db = require('./db/conn')
 const CompraController = require('./controller/Compra.controller')
 const ProdutoController = require('./controller/Produto.controller')
 const UsuarioController = require('./controller/Usuario.controller')
+const RelatVWController = require('./controller/relatVW.controller')
 
 app.use(express.urlencoded({ extended: true }))
 app.use(express.json())
@@ -28,9 +29,14 @@ app.delete('/produtos/apagar/:codProduto', ProdutoController.apagar)
 // Rotas de Usuarios
 app.get('/usuarios/listar', UsuarioController.listar)
 app.get('/usuarios/consultarPorPk/:codUsuario', UsuarioController.consultarPorPk)
+app.get('/usuarios/consultarPorNome/:nome', UsuarioController.consultarPorNome)
 app.post('/usuarios/cadastrar', UsuarioController.cadastrar)
 app.put('/usuarios/atualizar/:codUsuario', UsuarioController.atualizar)
 app.delete('/usuarios/apagar/:codUsuario', UsuarioController.apagar)
+
+// Rotas de Relatórios Analíticos (Views SQL Nativas)
+app.get('/relatorio/produtos-criticos', RelatVWController.listarHistoricoSaidas)
+app.get('/relatorio/volume-compras', RelatVWController.listarPorCategorias)
 
 db.sync()
     .then(() => {

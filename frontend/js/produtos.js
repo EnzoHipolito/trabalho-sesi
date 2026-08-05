@@ -3,6 +3,17 @@ const modalOverlay = document.getElementById('modalOverlay');
 const formProduto = document.getElementById('formProduto');
 const modalTitulo = document.getElementById('modalTitulo');
 
+let produtosCache = [];
+
+function showAlert(message, type = 'success') {
+    const el = document.getElementById('alertBox');
+    el.textContent = message;
+    el.className = `alert show alert-${type}`;
+    setTimeout(() => {
+        el.className = 'alert';
+    }, 4000);
+}
+
 function abrirModal(produto = null) {
     formProduto.reset();
     if (produto) {
@@ -33,62 +44,90 @@ function renderTabela(produtos) {
         return;
     }
 
-    tabelaProdutos.innerHTML = produtos.map(p => `
-        <tr>
-            <td>${p.codProduto}</td>
-            <td>${p.nome}</td>
-            <td>${p.categoria}</td>
-            <td>${p.marca}</td>
-            <td>R$ ${Number(p.preco).toFixed(2)}</td>
-            <td>${p.percentualDesconto}%</td>
-            <td>${p.quantidade}</td>
-            <td>
-                <button class="btn-primary btn-sm" onclick="editarProduto(${p.codProduto})">Editar</button>
-                <button class="btn-danger btn-sm" onclick="excluirProduto(${p.codProduto})">Excluir</button>
-            </td>
-        </tr>
-    `).join('');
+    let linhas = '';
+    produtos.forEach(p => {
+        linhas += `
+            <tr>
+                <td>${p.codProduto}</td>
+                <td>${p.nome}</td>
+                <td>${p.categoria}</td>
+                <td>${p.marca}</td>
+                <td>R$ ${Number(p.preco).toFixed(2)}</td>
+                <td>${p.percentualDesconto}%</td>
+                <td>${p.quantidade}</td>
+                <td>
+                    <button class="btn-primary btn-sm" onclick="editarProduto(${p.codProduto})">Editar</button>
+                    <button class="btn-danger btn-sm" onclick="excluirProduto(${p.codProduto})">Excluir</button>
+                </td>
+            </tr>
+        `;
+    });
+    tabelaProdutos.innerHTML = linhas;
 }
 
-let produtosCache = [];
-
-async function carregarProdutos() {
-    try {
-        produtosCache = await Api.produtos.listar();
+function carregarProdutos() {
+    fetch('http://localhost:3000/produtos/listar')
+    .then(res => res.json())
+    .then(dados => {
+        produtosCache = dados.getProduto;
         renderTabela(produtosCache);
-    } catch (err) {
-        tabelaProdutos.innerHTML = `<tr class="empty-row"><td colspan="8">Erro: ${err.message}</td></tr>`;
-    }
+    })
+    .catch(err => {
+        console.error('Erro ao listar produtos:', err);
+        tabelaProdutos.innerHTML = '<tr class="empty-row"><td colspan="8">Erro ao carregar produtos</td></tr>';
+    });
 }
 
-async function editarProduto(id) {
-    try {
-        const produto = await Api.produtos.consultarPorPk(id);
-        abrirModal(produto);
-    } catch (err) {
-        showAlert('alertBox', err.message, 'error');
-    }
+function editarProduto(id) {
+    fetch(`http://localhost:3000/produtos/consultarPorPk/${id}`)
+    .then(res => res.json())
+    .then(dados => {
+        if (!dados.getProduto) {
+            showAlert('Produto não encontrado', 'error');
+            return;
+        }
+        abrirModal(dados.getProduto);
+    })
+    .catch(err => {
+        console.error('Erro ao consultar produto:', err);
+        showAlert('Erro ao consultar produto', 'error');
+    });
 }
 
-async function excluirProduto(id) {
+function excluirProduto(id) {
     if (!confirm('Deseja realmente excluir este produto?')) return;
-    try {
-        await Api.produtos.apagar(id);
-        showAlert('alertBox', 'Produto excluído com sucesso!', 'success');
+
+    let ok = false;
+
+    fetch(`http://localhost:3000/produtos/apagar/${id}`, { 
+        method: 'DELETE' 
+    })
+    .then(res => {
+        ok = res.ok;
+        return res.json();
+    })
+    .then(dados => {
+        if (!ok) {
+            showAlert(dados.message, 'error');
+            return;
+        }
+        showAlert(dados.message, 'success');
         carregarProdutos();
-    } catch (err) {
-        showAlert('alertBox', err.message, 'error');
-    }
+    })
+    .catch(err => {
+        console.error('Erro ao excluir produto:', err);
+        showAlert('Erro ao excluir produto', 'error');
+    });
 }
 
 document.getElementById('btnNovo').addEventListener('click', () => abrirModal());
 document.getElementById('btnCancelar').addEventListener('click', fecharModal);
 
-formProduto.addEventListener('submit', async (e) => {
+formProduto.addEventListener('submit', (e) => {
     e.preventDefault();
 
     const cod = document.getElementById('codProduto').value;
-    const dados = {
+    const produto = {
         nome: document.getElementById('nome').value,
         descricao: document.getElementById('descricao').value,
         categoria: document.getElementById('categoria').value,
@@ -99,30 +138,49 @@ formProduto.addEventListener('submit', async (e) => {
         imagem: document.getElementById('imagem').value
     };
 
-    try {
-        if (cod) {
-            await Api.produtos.atualizar(cod, dados);
-            showAlert('alertBox', 'Produto atualizado com sucesso!', 'success');
-        } else {
-            await Api.produtos.cadastrar(dados);
-            showAlert('alertBox', 'Produto cadastrado com sucesso!', 'success');
+    const url = cod
+        ? `http://localhost:3000/produtos/atualizar/${cod}`
+        : 'http://localhost:3000/produtos/cadastrar';
+
+    let ok = false;
+
+    fetch(url, {
+        method: cod ? 'PUT' : 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(produto)
+    })
+    .then(res => {
+        ok = res.ok;
+        return res.json();
+    })
+    .then(dados => {
+        if (!ok) {
+            showAlert(dados.message, 'error');
+            return;
         }
+        showAlert(dados.message, 'success');
         fecharModal();
         carregarProdutos();
-    } catch (err) {
-        showAlert('alertBox', err.message, 'error');
-    }
+    })
+    .catch(err => {
+        console.error('Erro ao salvar produto:', err);
+        showAlert('Erro ao salvar produto', 'error');
+    });
 });
 
-document.getElementById('btnBuscar').addEventListener('click', async () => {
+document.getElementById('btnBuscar').addEventListener('click', () => {
     const id = document.getElementById('buscaId').value.trim();
     if (!id) return;
-    try {
-        const produto = await Api.produtos.consultarPorPk(id);
-        renderTabela(produto ? [produto] : []);
-    } catch (err) {
+
+    fetch(`http://localhost:3000/produtos/consultarPorPk/${id}`)
+    .then(res => res.json())
+    .then(dados => {
+        renderTabela(dados.getProduto ? [dados.getProduto] : []);
+    })
+    .catch(err => {
+        console.error('Erro ao buscar produto:', err);
         renderTabela([]);
-    }
+    });
 });
 
 document.getElementById('btnLimparBusca').addEventListener('click', () => {

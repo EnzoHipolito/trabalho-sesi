@@ -8,7 +8,8 @@ function renderCatalogo(produtos) {
         return;
     }
 
-    catalogGrid.innerHTML = produtos.map(p => {
+    let cards = '';
+    produtos.forEach(p => {
         const precoOriginal = Number(p.preco);
         const precoFinal = precoOriginal * (1 - Number(p.percentualDesconto) / 100);
         const temDesconto = Number(p.percentualDesconto) > 0;
@@ -16,7 +17,7 @@ function renderCatalogo(produtos) {
             ? `<span class="badge badge-green">${p.quantidade} em estoque</span>`
             : `<span class="badge badge-red">Sem estoque</span>`;
 
-        return `
+        cards += `
             <div class="product-card">
                 <img src="${p.imagem}" alt="${p.nome}">
                 <div class="info">
@@ -28,7 +29,8 @@ function renderCatalogo(produtos) {
                 </div>
             </div>
         `;
-    }).join('');
+    });
+    catalogGrid.innerHTML = cards;
 }
 
 function aplicarFiltro() {
@@ -39,18 +41,28 @@ function aplicarFiltro() {
     renderCatalogo(filtrados);
 }
 
-async function carregarCatalogo() {
-    try {
-        produtosCatalogo = await Api.produtos.listar();
+function carregarCatalogo() {
+    fetch('http://localhost:3000/produtos/listar')
+    .then(res => res.json())
+    .then(dados => {
+        produtosCatalogo = dados.getProduto;
 
-        const categorias = [...new Set(produtosCatalogo.map(p => p.categoria))];
-        filtroCategoria.innerHTML = '<option value="">Todas as categorias</option>' +
-            categorias.map(c => `<option value="${c}">${c}</option>`).join('');
+        let options = '<option value="">Todas as categorias</option>';
+        const categorias = [];
+        produtosCatalogo.forEach(p => {
+            if (!categorias.includes(p.categoria)) {
+                categorias.push(p.categoria);
+                options += `<option value="${p.categoria}">${p.categoria}</option>`;
+            }
+        });
+        filtroCategoria.innerHTML = options;
 
         renderCatalogo(produtosCatalogo);
-    } catch (err) {
-        catalogGrid.innerHTML = `<p>Erro ao carregar catálogo: ${err.message}</p>`;
-    }
+    })
+    .catch(err => {
+        console.error('Erro ao carregar catálogo:', err);
+        catalogGrid.innerHTML = '<p>Erro ao carregar catálogo</p>';
+    });
 }
 
 filtroCategoria.addEventListener('change', aplicarFiltro);

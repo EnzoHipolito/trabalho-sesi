@@ -6,25 +6,26 @@ const selectUsuario = document.getElementById('idUsuario');
 const selectProduto = document.getElementById('idProduto');
 
 let comprasCache = [];
-let usuariosMap = new Map();
-let produtosMap = new Map();
+let usuarios = [];
+let produtos = [];
 
-async function carregarSelects() {
-    const [usuarios, produtos] = await Promise.all([
-        Api.usuarios.listar(),
-        Api.produtos.listar()
-    ]);
+function showAlert(message, type = 'success') {
+    const el = document.getElementById('alertBox');
+    el.textContent = message;
+    el.className = `alert show alert-${type}`;
+    setTimeout(() => {
+        el.className = 'alert';
+    }, 4000);
+}
 
-    usuariosMap = new Map(usuarios.map(u => [u.codUsuario, u]));
-    produtosMap = new Map(produtos.map(p => [p.codProduto, p]));
+function nomeUsuario(id) {
+    const usuario = usuarios.find(u => u.codUsuario === id);
+    return usuario ? `${usuario.nome} ${usuario.sobrenome}` : id;
+}
 
-    selectUsuario.innerHTML = usuarios
-        .map(u => `<option value="${u.codUsuario}">${u.codUsuario} - ${u.nome} ${u.sobrenome}</option>`)
-        .join('');
-
-    selectProduto.innerHTML = produtos
-        .map(p => `<option value="${p.codProduto}">${p.codProduto} - ${p.nome}</option>`)
-        .join('');
+function nomeProduto(id) {
+    const produto = produtos.find(p => p.codProduto === id);
+    return produto ? produto.nome : id;
 }
 
 function abrirModal(compra = null) {
@@ -59,16 +60,14 @@ function renderTabela(compras) {
         return;
     }
 
-    tabelaCompras.innerHTML = compras.map(c => {
-        const usuario = usuariosMap.get(c.idUsuario);
-        const produto = produtosMap.get(c.idProduto);
+    let linhas = '';
+    compras.forEach(c => {
         const statusClass = c.statusCompra === 'PAGA' ? 'badge-green' : 'badge-gray';
-
-        return `
+        linhas += `
             <tr>
                 <td>${c.codCompra}</td>
-                <td>${usuario ? usuario.nome + ' ' + usuario.sobrenome : c.idUsuario}</td>
-                <td>${produto ? produto.nome : c.idProduto}</td>
+                <td>${nomeUsuario(c.idUsuario)}</td>
+                <td>${nomeProduto(c.idProduto)}</td>
                 <td>${c.tipo}</td>
                 <td>${c.qtdeMov}</td>
                 <td>R$ ${Number(c.precoFinal).toFixed(2)}</td>
@@ -81,46 +80,100 @@ function renderTabela(compras) {
                 </td>
             </tr>
         `;
-    }).join('');
+    });
+    tabelaCompras.innerHTML = linhas;
 }
 
-async function carregarCompras() {
-    try {
-        comprasCache = await Api.compras.listar();
+function carregarCompras() {
+    fetch('http://localhost:3000/compras/listar')
+    .then(res => res.json())
+    .then(dados => {
+        comprasCache = dados.getCompra;
         renderTabela(comprasCache);
-    } catch (err) {
-        tabelaCompras.innerHTML = `<tr class="empty-row"><td colspan="10">Erro: ${err.message}</td></tr>`;
-    }
+    })
+    .catch(err => {
+        console.error('Erro ao listar compras:', err);
+        tabelaCompras.innerHTML = '<tr class="empty-row"><td colspan="10">Erro ao carregar compras</td></tr>';
+    });
 }
 
-async function editarCompra(id) {
-    try {
-        const compra = await Api.compras.consultarPorPk(id);
-        abrirModal(compra);
-    } catch (err) {
-        showAlert('alertBox', err.message, 'error');
-    }
+function carregarSelects() {
+    return fetch('http://localhost:3000/usuarios/listar')
+    .then(res => res.json())
+    .then(dados => {
+        usuarios = dados.getUsuario;
+
+        let options = '';
+        usuarios.forEach(u => {
+            options += `<option value="${u.codUsuario}">${u.codUsuario} - ${u.nome} ${u.sobrenome}</option>`;
+        });
+        selectUsuario.innerHTML = options;
+
+        return fetch('http://localhost:3000/produtos/listar');
+    })
+    .then(res => res.json())
+    .then(dados => {
+        produtos = dados.getProduto;
+
+        let options = '';
+        produtos.forEach(p => {
+            options += `<option value="${p.codProduto}">${p.codProduto} - ${p.nome}</option>`;
+        });
+        selectProduto.innerHTML = options;
+    })
+    .catch(err => {
+        console.error('Erro ao carregar usuários e produtos:', err);
+    });
 }
 
-async function excluirCompra(id) {
+function editarCompra(id) {
+    fetch(`http://localhost:3000/compras/consultarPorPk/${id}`)
+    .then(res => res.json())
+    .then(dados => {
+        if (!dados.getCompra) {
+            showAlert('Compra não encontrada', 'error');
+            return;
+        }
+        abrirModal(dados.getCompra);
+    })
+    .catch(err => {
+        console.error('Erro ao consultar compra:', err);
+        showAlert('Erro ao consultar compra', 'error');
+    });
+}
+
+function excluirCompra(id) {
     if (!confirm('Deseja realmente excluir esta compra?')) return;
-    try {
-        await Api.compras.apagar(id);
-        showAlert('alertBox', 'Compra excluída com sucesso!', 'success');
+
+    let ok = false;
+
+    fetch(`http://localhost:3000/compras/apagar/${id}`, { method: 'DELETE' })
+    .then(res => {
+        ok = res.ok;
+        return res.json();
+    })
+    .then(dados => {
+        if (!ok) {
+            showAlert(dados.message, 'error');
+            return;
+        }
+        showAlert(dados.message, 'success');
         carregarCompras();
-    } catch (err) {
-        showAlert('alertBox', err.message, 'error');
-    }
+    })
+    .catch(err => {
+        console.error('Erro ao excluir compra:', err);
+        showAlert('Erro ao excluir compra', 'error');
+    });
 }
 
 document.getElementById('btnNovo').addEventListener('click', () => abrirModal());
 document.getElementById('btnCancelar').addEventListener('click', fecharModal);
 
-formCompra.addEventListener('submit', async (e) => {
+formCompra.addEventListener('submit', (e) => {
     e.preventDefault();
 
     const cod = document.getElementById('codCompra').value;
-    const dados = {
+    const compra = {
         idUsuario: Number(selectUsuario.value),
         idProduto: Number(selectProduto.value),
         tipo: document.getElementById('tipo').value,
@@ -133,30 +186,49 @@ formCompra.addEventListener('submit', async (e) => {
         data: document.getElementById('data').value
     };
 
-    try {
-        if (cod) {
-            await Api.compras.atualizar(cod, dados);
-            showAlert('alertBox', 'Compra atualizada com sucesso!', 'success');
-        } else {
-            await Api.compras.cadastrar(dados);
-            showAlert('alertBox', 'Compra cadastrada com sucesso!', 'success');
+    const url = cod
+        ? `http://localhost:3000/compras/atualizar/${cod}`
+        : 'http://localhost:3000/compras/cadastrar';
+
+    let ok = false;
+
+    fetch(url, {
+        method: cod ? 'PUT' : 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(compra)
+    })
+    .then(res => {
+        ok = res.ok;
+        return res.json();
+    })
+    .then(dados => {
+        if (!ok) {
+            showAlert(dados.message, 'error');
+            return;
         }
+        showAlert(dados.message, 'success');
         fecharModal();
         carregarCompras();
-    } catch (err) {
-        showAlert('alertBox', err.message, 'error');
-    }
+    })
+    .catch(err => {
+        console.error('Erro ao salvar compra:', err);
+        showAlert('Erro ao salvar compra', 'error');
+    });
 });
 
-document.getElementById('btnBuscar').addEventListener('click', async () => {
+document.getElementById('btnBuscar').addEventListener('click', () => {
     const id = document.getElementById('buscaId').value.trim();
     if (!id) return;
-    try {
-        const compra = await Api.compras.consultarPorPk(id);
-        renderTabela(compra ? [compra] : []);
-    } catch (err) {
+
+    fetch(`http://localhost:3000/compras/consultarPorPk/${id}`)
+    .then(res => res.json())
+    .then(dados => {
+        renderTabela(dados.getCompra ? [dados.getCompra] : []);
+    })
+    .catch(err => {
+        console.error('Erro ao buscar compra:', err);
         renderTabela([]);
-    }
+    });
 });
 
 document.getElementById('btnLimparBusca').addEventListener('click', () => {
@@ -164,7 +236,4 @@ document.getElementById('btnLimparBusca').addEventListener('click', () => {
     renderTabela(comprasCache);
 });
 
-(async function init() {
-    await carregarSelects();
-    await carregarCompras();
-})();
+carregarSelects().then(() => carregarCompras());

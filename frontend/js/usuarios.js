@@ -3,6 +3,17 @@ const modalOverlay = document.getElementById('modalOverlay');
 const formUsuario = document.getElementById('formUsuario');
 const modalTitulo = document.getElementById('modalTitulo');
 
+let usuariosCache = [];
+
+function showAlert(message, type = 'success') {
+    const el = document.getElementById('alertBox');
+    el.textContent = message;
+    el.className = `alert show alert-${type}`;
+    setTimeout(() => {
+        el.className = 'alert';
+    }, 4000);
+}
+
 function abrirModal(usuario = null) {
     formUsuario.reset();
     if (usuario) {
@@ -33,62 +44,90 @@ function renderTabela(usuarios) {
         return;
     }
 
-    tabelaUsuarios.innerHTML = usuarios.map(u => `
-        <tr>
-            <td>${u.codUsuario}</td>
-            <td>${u.nome} ${u.sobrenome}</td>
-            <td>${u.idade}</td>
-            <td>${u.email}</td>
-            <td>${u.telefone}</td>
-            <td>${u.cidade}</td>
-            <td>${u.estado}</td>
-            <td>
-                <button class="btn-primary btn-sm" onclick="editarUsuario(${u.codUsuario})">Editar</button>
-                <button class="btn-danger btn-sm" onclick="excluirUsuario(${u.codUsuario})">Excluir</button>
-            </td>
-        </tr>
-    `).join('');
+    let linhas = '';
+    usuarios.forEach(u => {
+        linhas += `
+            <tr>
+                <td>${u.codUsuario}</td>
+                <td>${u.nome} ${u.sobrenome}</td>
+                <td>${u.idade}</td>
+                <td>${u.email}</td>
+                <td>${u.telefone}</td>
+                <td>${u.cidade}</td>
+                <td>${u.estado}</td>
+                <td>
+                    <button class="btn-primary btn-sm" onclick="editarUsuario(${u.codUsuario})">Editar</button>
+                    <button class="btn-danger btn-sm" onclick="excluirUsuario(${u.codUsuario})">Excluir</button>
+                </td>
+            </tr>
+        `;
+    });
+    tabelaUsuarios.innerHTML = linhas;
 }
 
-let usuariosCache = [];
-
-async function carregarUsuarios() {
-    try {
-        usuariosCache = await Api.usuarios.listar();
+function carregarUsuarios() {
+    fetch('http://localhost:3000/usuarios/listar')
+    .then(res => res.json())
+    .then(dados => {
+        usuariosCache = dados.getUsuario;
         renderTabela(usuariosCache);
-    } catch (err) {
-        tabelaUsuarios.innerHTML = `<tr class="empty-row"><td colspan="8">Erro: ${err.message}</td></tr>`;
-    }
+    })
+    .catch(err => {
+        console.error('Erro ao listar usuários:', err);
+        tabelaUsuarios.innerHTML = '<tr class="empty-row"><td colspan="8">Erro ao carregar usuários</td></tr>';
+    });
 }
 
-async function editarUsuario(id) {
-    try {
-        const usuario = await Api.usuarios.consultarPorPk(id);
-        abrirModal(usuario);
-    } catch (err) {
-        showAlert('alertBox', err.message, 'error');
-    }
+function editarUsuario(id) {
+    fetch(`http://localhost:3000/usuarios/consultarPorPk/${id}`)
+    .then(res => res.json())
+    .then(dados => {
+        if (!dados.getUsuario) {
+            showAlert('Usuário não encontrado', 'error');
+            return;
+        }
+        abrirModal(dados.getUsuario);
+    })
+    .catch(err => {
+        console.error('Erro ao consultar usuário:', err);
+        showAlert('Erro ao consultar usuário', 'error');
+    });
 }
 
-async function excluirUsuario(id) {
+function excluirUsuario(id) {
     if (!confirm('Deseja realmente excluir este usuário?')) return;
-    try {
-        await Api.usuarios.apagar(id);
-        showAlert('alertBox', 'Usuário excluído com sucesso!', 'success');
+
+    let ok = false;
+
+    fetch(`http://localhost:3000/usuarios/apagar/${id}`, {
+        method: 'DELETE' 
+    })
+    .then(res => {
+        ok = res.ok;
+        return res.json();
+    })
+    .then(dados => {
+        if (!ok) {
+            showAlert(dados.message, 'error');
+            return;
+        }
+        showAlert(dados.message, 'success');
         carregarUsuarios();
-    } catch (err) {
-        showAlert('alertBox', err.message, 'error');
-    }
+    })
+    .catch(err => {
+        console.error('Erro ao excluir usuário:', err);
+        showAlert('Erro ao excluir usuário', 'error');
+    });
 }
 
 document.getElementById('btnNovo').addEventListener('click', () => abrirModal());
 document.getElementById('btnCancelar').addEventListener('click', fecharModal);
 
-formUsuario.addEventListener('submit', async (e) => {
+formUsuario.addEventListener('submit', (e) => {
     e.preventDefault();
 
     const cod = document.getElementById('codUsuario').value;
-    const dados = {
+    const usuario = {
         nome: document.getElementById('nome').value,
         sobrenome: document.getElementById('sobrenome').value,
         idade: Number(document.getElementById('idade').value),
@@ -99,41 +138,64 @@ formUsuario.addEventListener('submit', async (e) => {
         estado: document.getElementById('estado').value
     };
 
-    try {
-        if (cod) {
-            await Api.usuarios.atualizar(cod, dados);
-            showAlert('alertBox', 'Usuário atualizado com sucesso!', 'success');
-        } else {
-            await Api.usuarios.cadastrar(dados);
-            showAlert('alertBox', 'Usuário cadastrado com sucesso!', 'success');
+    const url = cod
+        ? `http://localhost:3000/usuarios/atualizar/${cod}`
+        : 'http://localhost:3000/usuarios/cadastrar';
+
+    let ok = false;
+
+    fetch(url, {
+        method: cod ? 'PUT' : 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(usuario)
+    })
+    .then(res => {
+        ok = res.ok;
+        return res.json();
+    })
+    .then(dados => {
+        if (!ok) {
+            showAlert(dados.message, 'error');
+            return;
         }
+        showAlert(dados.message, 'success');
         fecharModal();
         carregarUsuarios();
-    } catch (err) {
-        showAlert('alertBox', err.message, 'error');
-    }
+    })
+    .catch(err => {
+        console.error('Erro ao salvar usuário:', err);
+        showAlert('Erro ao salvar usuário', 'error');
+    });
 });
 
-document.getElementById('btnBuscarId').addEventListener('click', async () => {
+document.getElementById('btnBuscarId').addEventListener('click', () => {
     const id = document.getElementById('buscaId').value.trim();
     if (!id) return;
-    try {
-        const usuario = await Api.usuarios.consultarPorPk(id);
-        renderTabela(usuario ? [usuario] : []);
-    } catch (err) {
+
+    fetch(`http://localhost:3000/usuarios/consultarPorPk/${id}`)
+    .then(res => res.json())
+    .then(dados => {
+        renderTabela(dados.getUsuario ? [dados.getUsuario] : []);
+    })
+    .catch(err => {
+        console.error('Erro ao buscar usuário por id:', err);
         renderTabela([]);
-    }
+    });
 });
 
-document.getElementById('btnBuscarNome').addEventListener('click', async () => {
+document.getElementById('btnBuscarNome').addEventListener('click', () => {
     const nome = document.getElementById('buscaNome').value.trim();
     if (!nome) return;
-    try {
-        const usuario = await Api.usuarios.consultarPorNome(nome);
-        renderTabela(usuario ? [usuario] : []);
-    } catch (err) {
+
+    fetch(`http://localhost:3000/usuarios/consultarPorNome/${nome}`)
+    .then(res => res.json())
+    .then(dados => {
+        renderTabela(dados.getUsuario ? [dados.getUsuario] : []);
+    })
+    .catch(err => {
+        console.error('Erro ao buscar usuário por nome:', err);
         renderTabela([]);
-    }
+    });
 });
 
 document.getElementById('btnLimparBusca').addEventListener('click', () => {

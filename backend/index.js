@@ -17,12 +17,12 @@ app.get('/compras/listar', CompraController.listar)
 app.get('/compras/consultarPorPk/:codCompra', CompraController.consultarPorPk)
 app.post('/compras/cadastrar', CompraController.cadastrar)
 app.put('/compras/atualizar/:codCompra', CompraController.atualizar)
-app.delete('/compras/apagar/:codCompra', CompraController.apagar)
 
 // Rotas de Produtos
 app.get('/produtos/listar', ProdutoController.listar)
 app.get('/produtos/consultarPorPk/:codProduto', ProdutoController.consultarPorPk)
 app.post('/produtos/cadastrar', ProdutoController.cadastrar)
+app.post('/produtos/cadastrarEmLote', ProdutoController.cadastrarEmLote)
 app.put('/produtos/atualizar/:codProduto', ProdutoController.atualizar)
 app.delete('/produtos/apagar/:codProduto', ProdutoController.apagar)
 
@@ -31,6 +31,7 @@ app.get('/usuarios/listar', UsuarioController.listar)
 app.get('/usuarios/consultarPorPk/:codUsuario', UsuarioController.consultarPorPk)
 app.get('/usuarios/consultarPorNome/:nome', UsuarioController.consultarPorNome)
 app.post('/usuarios/cadastrar', UsuarioController.cadastrar)
+app.post('/usuarios/cadastrarEmLote', UsuarioController.cadastrarEmLote)
 app.put('/usuarios/atualizar/:codUsuario', UsuarioController.atualizar)
 app.delete('/usuarios/apagar/:codUsuario', UsuarioController.apagar)
 

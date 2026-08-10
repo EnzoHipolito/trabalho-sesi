@@ -14,6 +14,37 @@ const cadastrar = async (req, res) => {
     }
 }
 
+const cadastrarEmLote = async (req, res) => {
+    try{
+        const resposta = await fetch('https://dummyjson.com/products')
+
+        if(!resposta.ok){
+            return res.status(502).json({message: 'Erro ao consultar a API externa de produtos!'})
+        }
+
+        const dados = await resposta.json()
+
+        const produtos = dados.products.map((produto) => ({
+            nome: String(produto.title).substring(0, 40),
+            descricao: String(produto.description).substring(0, 150),
+            categoria: String(produto.category).substring(0, 40),
+            preco: produto.price,
+            percentualDesconto: produto.discountPercentage || 0,
+            quantidade: produto.stock || 0,
+            marca: String(produto.brand || 'Sem marca').substring(0, 40),
+            imagem: String(produto.thumbnail || '').substring(0, 255)
+        }))
+
+        const cadastrados = await Produto.bulkCreate(produtos)
+
+        res.status(201).json({message: `${cadastrados.length} produtos cadastrados em lote com sucesso!`, total: cadastrados.length})
+    }
+    catch(err){
+        res.status(500).json({message: 'Erro ao cadastrar produtos em lote!'})
+        console.log(err)
+    }
+}
+
 const apagar = async (req, res) => {
     const codProduto = req.params.codProduto
     
@@ -88,4 +119,4 @@ const listar = async (req, res) => {
     }
 }
 
-module.exports = { consultarPorPk, listar, cadastrar, apagar, atualizar }
+module.exports = { consultarPorPk, listar, cadastrar, cadastrarEmLote, apagar, atualizar }

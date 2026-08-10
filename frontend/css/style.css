@@ -270,6 +270,34 @@ tfoot td {
     gap: 8px;
 }
 
+/* Carga em lote */
+.bulk-card {
+    margin-top: 16px;
+}
+
+.bulk-info {
+    margin-bottom: 16px;
+}
+
+.bulk-info h2 {
+    font-size: 17px;
+    margin-bottom: 6px;
+}
+
+.bulk-info p {
+    font-size: 14px;
+    color: #6b7280;
+}
+
+.bulk-status {
+    font-size: 13px;
+    color: #6b7280;
+    align-self: center;
+}
+
+.bulk-status.ok { color: #166534; }
+.bulk-status.erro { color: #991b1b; }
+
 /* Catalogo */
 .catalog-grid {
     display: grid;

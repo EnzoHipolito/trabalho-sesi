@@ -1,4 +1,6 @@
 const formProduto = document.getElementById('formProduto');
+const btnLote = document.getElementById('btnLote');
+const bulkStatus = document.getElementById('bulkStatus');
 
 formProduto.addEventListener('submit', (e) => {
     e.preventDefault();
@@ -34,5 +36,39 @@ formProduto.addEventListener('submit', (e) => {
     })
     .catch(err => {
         console.error('Erro ao cadastrar produto:', err);
+    });
+});
+
+btnLote.addEventListener('click', () => {
+    btnLote.disabled = true;
+    bulkStatus.className = 'bulk-status';
+    bulkStatus.textContent = 'Buscando dados na API externa...';
+
+    let ok = false;
+
+    fetch('http://localhost:3000/produtos/cadastrarEmLote', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' }
+    })
+    .then(res => {
+        ok = res.ok;
+        return res.json();
+    })
+    .then(dados => {
+        if (!ok) {
+            bulkStatus.className = 'bulk-status erro';
+            bulkStatus.textContent = dados.message;
+            btnLote.disabled = false;
+            return;
+        }
+        bulkStatus.className = 'bulk-status ok';
+        bulkStatus.textContent = dados.message;
+        setTimeout(() => { window.location.href = 'produtos.html'; }, 1200);
+    })
+    .catch(err => {
+        console.error('Erro ao cadastrar produtos em lote:', err);
+        bulkStatus.className = 'bulk-status erro';
+        bulkStatus.textContent = 'Erro ao cadastrar produtos em lote!';
+        btnLote.disabled = false;
     });
 });

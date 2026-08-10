@@ -76,4 +76,4 @@ const listar = async (req, res) => {
     }
 }
 
-module.exports = { consultarPorPk, listar, cadastrar, apagar, atualizar }
+module.exports = { consultarPorPk, listar, cadastrar, atualizar }

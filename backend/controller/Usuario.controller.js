@@ -14,6 +14,37 @@ const cadastrar = async (req, res) => {
     }
 }
 
+const cadastrarEmLote = async (req, res) => {
+    try{
+        const resposta = await fetch('https://dummyjson.com/users')
+
+        if(!resposta.ok){
+            return res.status(502).json({message: 'Erro ao consultar a API externa de usuarios!'})
+        }
+
+        const dados = await resposta.json()
+
+        const usuarios = dados.users.map((usuario) => ({
+            nome: String(usuario.firstName).substring(0, 40),
+            sobrenome: String(usuario.lastName).substring(0, 40),
+            idade: usuario.age || 0,
+            email: String(usuario.email).substring(0, 40),
+            telefone: String(usuario.phone).substring(0, 20),
+            endereco: String(usuario.address?.address || '').substring(0, 255),
+            cidade: String(usuario.address?.city || '').substring(0, 40),
+            estado: String(usuario.address?.stateCode || '--').substring(0, 2)
+        }))
+
+        const cadastrados = await Usuario.bulkCreate(usuarios)
+
+        res.status(201).json({message: `${cadastrados.length} usuarios cadastrados em lote com sucesso!`, total: cadastrados.length})
+    }
+    catch(err){
+        console.error('Erro ao cadastrar em lote:', err)
+        res.status(500).json({message: 'Erro ao cadastrar usuarios em lote!'})
+    }
+}
+
 const apagar = async (req, res) => {
     const codUsuario = req.params.codUsuario
 
@@ -100,4 +131,4 @@ const listar = async (req, res) => {
     }
 }
 
-module.exports = { consultarPorPk, listar, cadastrar, apagar, atualizar, consultarPorNome }
+module.exports = { consultarPorPk, listar, cadastrar, cadastrarEmLote, apagar, atualizar, consultarPorNome }

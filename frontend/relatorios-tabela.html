@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Relatórios em Tabela</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <header class="navbar">
+        <div class="brand">Sistema de Compras</div>
+        <nav>
+            <a href="index.html">Dashboard</a>
+            <a href="usuarios.html">Usuários</a>
+            <a href="produtos.html">Produtos</a>
+            <a href="catalogo.html">Catálogo</a>
+            <a href="compras.html">Compras</a>
+            <a href="relatorios.html">Relatórios (Grafico)</a>
+            <a href="relatorios-tabela.html" class="active">Relatórios (Tabela)</a>
+        </nav>
+    </header>
+
+    <main class="container">
+        <h1>Relatórios em Tabela</h1>
+
+        <div class="toolbar">
+            <p id="resumo">Carregando dados...</p>
+            <button class="btn-primary" id="btnAtualizar">Atualizar</button>
+        </div>
+
+        <h2 class="report-title">Volume de Compras por Produto</h2>
+        <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Produto</th>
+                        <th>Qtde Movimentada</th>
+                        <th>Valor Movimentado</th>
+                        <th>% do Total</th>
+                    </tr>
+                </thead>
+                <tbody id="tabelaVolume">
+                    <tr class="empty-row"><td colspan="4">Carregando...</td></tr>
+                </tbody>
+                <tfoot id="rodapeVolume"></tfoot>
+            </table>
+        </div>
+
+        <h2 class="report-title">Produtos Críticos (estoque &lt; 10)</h2>
+        <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Código</th>
+                        <th>Produto</th>
+                        <th>Categoria</th>
+                        <th>Estoque Atual</th>
+                    </tr>
+                </thead>
+                <tbody id="tabelaCriticos">
+                    <tr class="empty-row"><td colspan="4">Carregando...</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </main>
+
+    <script src="js/relatorios-tabela.js"></script>
+</body>
+</html>

@@ -15,21 +15,20 @@
             <a href="produtos.html" class="active">Produtos</a>
             <a href="catalogo.html">Catálogo</a>
             <a href="compras.html">Compras</a>
-            <a href="relatorios.html">Relatórios</a>
+            <a href="relatorios.html">Relatórios (Grafico)</a>
+            <a href="relatorios-tabela.html">Relatórios (Tabela)</a>
         </nav>
     </header>
 
     <main class="container">
         <h1>Produtos</h1>
-        <div id="alertBox" class="alert"></div>
-
         <div class="toolbar">
             <div class="search-box">
                 <input type="number" id="buscaId" placeholder="Buscar por ID...">
                 <button class="btn-secondary" id="btnBuscar">Buscar</button>
                 <button class="btn-secondary" id="btnLimparBusca">Limpar</button>
             </div>
-            <button class="btn-primary" id="btnNovo">+ Novo Produto</button>
+            <a href="produto-novo.html"><button class="btn-primary">+ Novo Produto</button></a>
         </div>
 
         <div class="table-wrap">
@@ -52,53 +51,6 @@
             </table>
         </div>
     </main>
-
-    <div class="modal-overlay" id="modalOverlay">
-        <div class="modal">
-            <h2 id="modalTitulo">Novo Produto</h2>
-            <form id="formProduto">
-                <input type="hidden" id="codProduto">
-                <div class="form-grid">
-                    <div class="form-field full">
-                        <label>Nome</label>
-                        <input type="text" id="nome" maxlength="40" required>
-                    </div>
-                    <div class="form-field full">
-                        <label>Descrição</label>
-                        <input type="text" id="descricao" maxlength="150" required>
-                    </div>
-                    <div class="form-field">
-                        <label>Categoria</label>
-                        <input type="text" id="categoria" maxlength="40" required>
-                    </div>
-                    <div class="form-field">
-                        <label>Marca</label>
-                        <input type="text" id="marca" maxlength="40" required>
-                    </div>
-                    <div class="form-field">
-                        <label>Preço</label>
-                        <input type="number" id="preco" step="0.01" min="0" required>
-                    </div>
-                    <div class="form-field">
-                        <label>Desconto (%)</label>
-                        <input type="number" id="percentualDesconto" step="0.01" min="0" max="100" required>
-                    </div>
-                    <div class="form-field">
-                        <label>Quantidade</label>
-                        <input type="number" id="quantidade" min="0" required>
-                    </div>
-                    <div class="form-field full">
-                        <label>URL da Imagem</label>
-                        <input type="text" id="imagem" maxlength="255" required>
-                    </div>
-                </div>
-                <div class="modal-actions">
-                    <button type="button" class="btn-secondary" id="btnCancelar">Cancelar</button>
-                    <button type="submit" class="btn-success">Salvar</button>
-                </div>
-            </form>
-        </div>
-    </div>
 
     <script src="js/produtos.js"></script>
 </body>

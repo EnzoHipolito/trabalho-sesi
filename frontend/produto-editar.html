@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Editar Produto</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <header class="navbar">
+        <div class="brand">Sistema de Compras</div>
+        <nav>
+            <a href="index.html">Dashboard</a>
+            <a href="usuarios.html">Usuários</a>
+            <a href="produtos.html" class="active">Produtos</a>
+            <a href="catalogo.html">Catálogo</a>
+            <a href="compras.html">Compras</a>
+            <a href="relatorios.html">Relatórios (Grafico)</a>
+            <a href="relatorios-tabela.html">Relatórios (Tabela)</a>
+        </nav>
+    </header>
+
+    <main class="container">
+        <h1>Editar Produto</h1>
+        <div class="form-card">
+            <form id="formProduto">
+                <input type="hidden" id="codProduto">
+                <div class="form-grid">
+                    <div class="form-field full">
+                        <label>Nome</label>
+                        <input type="text" id="nome" maxlength="40" required>
+                    </div>
+                    <div class="form-field full">
+                        <label>Descrição</label>
+                        <input type="text" id="descricao" maxlength="150" required>
+                    </div>
+                    <div class="form-field">
+                        <label>Categoria</label>
+                        <input type="text" id="categoria" maxlength="40" required>
+                    </div>
+                    <div class="form-field">
+                        <label>Marca</label>
+                        <input type="text" id="marca" maxlength="40" required>
+                    </div>
+                    <div class="form-field">
+                        <label>Preço</label>
+                        <input type="number" id="preco" step="0.01" min="0" required>
+                    </div>
+                    <div class="form-field">
+                        <label>Desconto (%)</label>
+                        <input type="number" id="percentualDesconto" step="0.01" min="0" max="100" required>
+                    </div>
+                    <div class="form-field">
+                        <label>Quantidade</label>
+                        <input type="number" id="quantidade" min="0" required>
+                    </div>
+                    <div class="form-field full">
+                        <label>URL da Imagem</label>
+                        <input type="text" id="imagem" maxlength="255" required>
+                    </div>
+                </div>
+                <div class="form-actions">
+                    <a href="produtos.html"><button type="button" class="btn-secondary">Cancelar</button></a>
+                    <button type="submit" class="btn-success">Salvar</button>
+                </div>
+            </form>
+        </div>
+    </main>
+
+    <script src="js/produto-editar.js"></script>
+</body>
+</html>

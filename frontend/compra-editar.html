@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Editar Compra</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <header class="navbar">
+        <div class="brand">Sistema de Compras</div>
+        <nav>
+            <a href="index.html">Dashboard</a>
+            <a href="usuarios.html">Usuários</a>
+            <a href="produtos.html">Produtos</a>
+            <a href="catalogo.html">Catálogo</a>
+            <a href="compras.html" class="active">Compras</a>
+            <a href="relatorios.html">Relatórios (Grafico)</a>
+            <a href="relatorios-tabela.html">Relatórios (Tabela)</a>
+        </nav>
+    </header>
+
+    <main class="container">
+        <h1>Editar Compra</h1>
+        <div class="form-card">
+            <form id="formCompra">
+                <input type="hidden" id="codCompra">
+                <div class="form-grid">
+                    <div class="form-field">
+                        <label>Usuário</label>
+                        <select id="idUsuario" required></select>
+                    </div>
+                    <div class="form-field">
+                        <label>Produto</label>
+                        <select id="idProduto" required></select>
+                    </div>
+                    <div class="form-field">
+                        <label>Tipo</label>
+                        <select id="tipo" required>
+                            <option value="ENTRADA">ENTRADA</option>
+                            <option value="SAIDA">SAIDA</option>
+                        </select>
+                    </div>
+                    <div class="form-field">
+                        <label>Quantidade</label>
+                        <input type="number" id="qtdeMov" min="1" required>
+                    </div>
+                    <div class="form-field">
+                        <label>Preço Unitário</label>
+                        <input type="number" id="precoUnit" step="0.01" min="0" required>
+                    </div>
+                    <div class="form-field">
+                        <label>Desconto (%)</label>
+                        <input type="number" id="desconto" step="0.01" min="0" max="100" required>
+                    </div>
+                    <div class="form-field">
+                        <label>Preço Final</label>
+                        <input type="number" id="precoFinal" step="0.01" min="0" required>
+                    </div>
+                    <div class="form-field">
+                        <label>Forma de Pagamento</label>
+                        <select id="formaPagamento" required>
+                            <option value="DEBITO">DEBITO</option>
+                            <option value="CREDITO">CREDITO</option>
+                            <option value="DINHEIRO">DINHEIRO</option>
+                        </select>
+                    </div>
+                    <div class="form-field">
+                        <label>Status</label>
+                        <select id="statusCompra" required>
+                            <option value="PENDENTE">PENDENTE</option>
+                            <option value="PAGA">PAGA</option>
+                        </select>
+                    </div>
+                    <div class="form-field">
+                        <label>Data</label>
+                        <input type="date" id="data" required>
+                    </div>
+                </div>
+                <div class="form-actions">
+                    <a href="compras.html"><button type="button" class="btn-secondary">Cancelar</button></a>
+                    <button type="submit" class="btn-success">Salvar</button>
+                </div>
+            </form>
+        </div>
+    </main>
+
+    <script src="js/compra-editar.js"></script>
+</body>
+</html>

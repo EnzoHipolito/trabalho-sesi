@@ -15,14 +15,13 @@
             <a href="produtos.html">Produtos</a>
             <a href="catalogo.html">Catálogo</a>
             <a href="compras.html">Compras</a>
-            <a href="relatorios.html">Relatórios</a>
+            <a href="relatorios.html">Relatórios (Grafico)</a>
+            <a href="relatorios-tabela.html">Relatórios (Tabela)</a>
         </nav>
     </header>
 
     <main class="container">
         <h1>Usuários</h1>
-        <div id="alertBox" class="alert"></div>
-
         <div class="toolbar">
             <div class="search-box">
                 <input type="number" id="buscaId" placeholder="Buscar por ID...">
@@ -31,7 +30,7 @@
                 <button class="btn-secondary" id="btnBuscarNome">Buscar</button>
                 <button class="btn-secondary" id="btnLimparBusca">Limpar</button>
             </div>
-            <button class="btn-primary" id="btnNovo">+ Novo Usuário</button>
+            <a href="usuario-novo.html"><button class="btn-primary">+ Novo Usuário</button></a>
         </div>
 
         <div class="table-wrap">
@@ -54,53 +53,6 @@
             </table>
         </div>
     </main>
-
-    <div class="modal-overlay" id="modalOverlay">
-        <div class="modal">
-            <h2 id="modalTitulo">Novo Usuário</h2>
-            <form id="formUsuario">
-                <input type="hidden" id="codUsuario">
-                <div class="form-grid">
-                    <div class="form-field">
-                        <label>Nome</label>
-                        <input type="text" id="nome" maxlength="40" required>
-                    </div>
-                    <div class="form-field">
-                        <label>Sobrenome</label>
-                        <input type="text" id="sobrenome" maxlength="40" required>
-                    </div>
-                    <div class="form-field">
-                        <label>Idade</label>
-                        <input type="number" id="idade" min="0" required>
-                    </div>
-                    <div class="form-field">
-                        <label>Telefone</label>
-                        <input type="text" id="telefone" maxlength="20" required>
-                    </div>
-                    <div class="form-field full">
-                        <label>Email</label>
-                        <input type="email" id="email" maxlength="40" required>
-                    </div>
-                    <div class="form-field full">
-                        <label>Endereço</label>
-                        <input type="text" id="endereco" maxlength="255" required>
-                    </div>
-                    <div class="form-field">
-                        <label>Cidade</label>
-                        <input type="text" id="cidade" maxlength="40" required>
-                    </div>
-                    <div class="form-field">
-                        <label>Estado (UF)</label>
-                        <input type="text" id="estado" maxlength="2" required>
-                    </div>
-                </div>
-                <div class="modal-actions">
-                    <button type="button" class="btn-secondary" id="btnCancelar">Cancelar</button>
-                    <button type="submit" class="btn-success">Salvar</button>
-                </div>
-            </form>
-        </div>
-    </div>
 
     <script src="js/usuarios.js"></script>
 </body>

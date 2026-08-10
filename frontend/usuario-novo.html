@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Novo Usuário</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <header class="navbar">
+        <div class="brand">Sistema de Compras</div>
+        <nav>
+            <a href="index.html">Dashboard</a>
+            <a href="usuarios.html" class="active">Usuários</a>
+            <a href="produtos.html">Produtos</a>
+            <a href="catalogo.html">Catálogo</a>
+            <a href="compras.html">Compras</a>
+            <a href="relatorios.html">Relatórios (Grafico)</a>
+            <a href="relatorios-tabela.html">Relatórios (Tabela)</a>
+        </nav>
+    </header>
+
+    <main class="container">
+        <h1>Novo Usuário</h1>
+        <div class="form-card">
+            <form id="formUsuario">
+                <div class="form-grid">
+                    <div class="form-field">
+                        <label>Nome</label>
+                        <input type="text" id="nome" maxlength="40" required>
+                    </div>
+                    <div class="form-field">
+                        <label>Sobrenome</label>
+                        <input type="text" id="sobrenome" maxlength="40" required>
+                    </div>
+                    <div class="form-field">
+                        <label>Idade</label>
+                        <input type="number" id="idade" min="0" required>
+                    </div>
+                    <div class="form-field">
+                        <label>Telefone</label>
+                        <input type="text" id="telefone" maxlength="20" required>
+                    </div>
+                    <div class="form-field full">
+                        <label>Email</label>
+                        <input type="email" id="email" maxlength="40" required>
+                    </div>
+                    <div class="form-field full">
+                        <label>Endereço</label>
+                        <input type="text" id="endereco" maxlength="255" required>
+                    </div>
+                    <div class="form-field">
+                        <label>Cidade</label>
+                        <input type="text" id="cidade" maxlength="40" required>
+                    </div>
+                    <div class="form-field">
+                        <label>Estado (UF)</label>
+                        <input type="text" id="estado" maxlength="2" required>
+                    </div>
+                </div>
+                <div class="form-actions">
+                    <a href="usuarios.html"><button type="button" class="btn-secondary">Cancelar</button></a>
+                    <button type="submit" class="btn-success">Salvar</button>
+                </div>
+            </form>
+        </div>
+    </main>
+
+    <script src="js/usuario-novo.js"></script>
+</body>
+</html>

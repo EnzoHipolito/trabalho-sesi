@@ -1,0 +1,425 @@
+### Testes da API - Sistema de Compras
+### Extensão: REST Client
+### Suba o servidor antes: node index.js
+
+### =====================================================================
+### USUÁRIOS
+### =====================================================================
+
+### Listar todos os usuários
+GET http://localhost:3000/usuarios/listar
+
+### Consultar usuário por código
+GET http://localhost:3000/usuarios/consultarPorPk/1
+
+### Consultar usuário inexistente -> 404
+GET http://localhost:3000/usuarios/consultarPorPk/999999
+
+### Consultar usuário por nome
+GET http://localhost:3000/usuarios/consultarPorNome/Teste
+
+### Consultar por nome inexistente -> 404
+GET http://localhost:3000/usuarios/consultarPorNome/NomeQueNaoExiste
+
+### Cadastrar usuário
+POST http://localhost:3000/usuarios/cadastrar
+Content-Type: application/json
+
+{
+    "nome": "Teste",
+    "sobrenome": "Da Silva",
+    "idade": 30,
+    "email": "teste@email.com",
+    "telefone": "11999999999",
+    "endereco": "Rua das Flores, 123",
+    "cidade": "Sao Paulo",
+    "estado": "SP"
+}
+
+### Cadastrar usuário com campos faltando -> 500
+POST http://localhost:3000/usuarios/cadastrar
+Content-Type: application/json
+
+{
+    "nome": "Incompleto"
+}
+
+### Cadastrar usuários em lote (DummyJSON)
+POST http://localhost:3000/usuarios/cadastrarEmLote
+
+### Atualizar usuário
+PUT http://localhost:3000/usuarios/atualizar/1
+Content-Type: application/json
+
+{
+    "nome": "Teste Atualizado",
+    "sobrenome": "Da Silva",
+    "idade": 31,
+    "email": "atualizado@email.com",
+    "telefone": "11988888888",
+    "endereco": "Rua das Flores, 456",
+    "cidade": "Campinas",
+    "estado": "SP"
+}
+
+### Atualizar usuário inexistente -> 404
+PUT http://localhost:3000/usuarios/atualizar/999999
+Content-Type: application/json
+
+{
+    "nome": "Nao Existe"
+}
+
+### Apagar usuário
+DELETE http://localhost:3000/usuarios/apagar/1
+
+### Apagar usuário inexistente -> 500
+DELETE http://localhost:3000/usuarios/apagar/999999
+
+
+### =====================================================================
+### PRODUTOS
+### =====================================================================
+
+### Listar todos os produtos
+GET http://localhost:3000/produtos/listar
+
+### Consultar produto por código (use para conferir o estoque)
+GET http://localhost:3000/produtos/consultarPorPk/1
+
+### Consultar produto inexistente -> 404
+GET http://localhost:3000/produtos/consultarPorPk/999999
+
+### Cadastrar produto (estoque inicial 10)
+POST http://localhost:3000/produtos/cadastrar
+Content-Type: application/json
+
+{
+    "nome": "Produto de Teste",
+    "descricao": "Produto usado para testar a movimentacao de estoque",
+    "categoria": "testes",
+    "preco": 100.00,
+    "percentualDesconto": 10,
+    "quantidade": 10,
+    "marca": "Marca Teste",
+    "imagem": "https://via.placeholder.com/150"
+}
+
+### Cadastrar produto com campos faltando -> 500
+POST http://localhost:3000/produtos/cadastrar
+Content-Type: application/json
+
+{
+    "nome": "Incompleto"
+}
+
+### Cadastrar produtos em lote (DummyJSON)
+POST http://localhost:3000/produtos/cadastrarEmLote
+
+### Atualizar produto
+PUT http://localhost:3000/produtos/atualizar/1
+Content-Type: application/json
+
+{
+    "nome": "Produto de Teste Atualizado",
+    "descricao": "Descricao atualizada",
+    "categoria": "testes",
+    "preco": 150.00,
+    "percentualDesconto": 5,
+    "quantidade": 10,
+    "marca": "Marca Teste",
+    "imagem": "https://via.placeholder.com/150"
+}
+
+### Atualizar produto inexistente -> 404
+PUT http://localhost:3000/produtos/atualizar/999999
+Content-Type: application/json
+
+{
+    "nome": "Nao Existe"
+}
+
+### Apagar produto
+DELETE http://localhost:3000/produtos/apagar/1
+
+### Apagar produto inexistente -> 500
+DELETE http://localhost:3000/produtos/apagar/999999
+
+
+### =====================================================================
+### COMPRAS
+### =====================================================================
+
+### Listar todas as compras
+GET http://localhost:3000/compras/listar
+
+### Consultar compra por código
+GET http://localhost:3000/compras/consultarPorPk/1
+
+### Consultar compra inexistente -> 404
+GET http://localhost:3000/compras/consultarPorPk/999999
+
+### Atualizar compra
+PUT http://localhost:3000/compras/atualizar/1
+Content-Type: application/json
+
+{
+    "idUsuario": 1,
+    "idProduto": 1,
+    "tipo": "ENTRADA",
+    "qtdeMov": 5,
+    "precoUnit": 100.00,
+    "desconto": 0,
+    "precoFinal": 500.00,
+    "formaPagamento": "CREDITO",
+    "statusCompra": "PAGA",
+    "data": "2026-08-10"
+}
+
+### Atualizar compra inexistente -> 404
+PUT http://localhost:3000/compras/atualizar/999999
+Content-Type: application/json
+
+{
+    "qtdeMov": 1
+}
+
+
+### =====================================================================
+### MOVIMENTAÇÃO DE ESTOQUE (rode na ordem)
+### =====================================================================
+
+### 1) Estoque antes de tudo (anote a quantidade)
+GET http://localhost:3000/produtos/consultarPorPk/1
+
+### 2) SAIDA de 3 -> 201, o estoque deve DIMINUIR 3
+POST http://localhost:3000/compras/cadastrar
+Content-Type: application/json
+
+{
+    "idUsuario": 1,
+    "idProduto": 1,
+    "tipo": "SAIDA",
+    "qtdeMov": 3,
+    "precoUnit": 100.00,
+    "desconto": 0,
+    "precoFinal": 300.00,
+    "formaPagamento": "DINHEIRO",
+    "statusCompra": "PAGA",
+    "data": "2026-08-10"
+}
+
+### 3) Confira: diminuiu 3
+GET http://localhost:3000/produtos/consultarPorPk/1
+
+### 4) ENTRADA de 20 -> 201, o estoque deve AUMENTAR 20
+POST http://localhost:3000/compras/cadastrar
+Content-Type: application/json
+
+{
+    "idUsuario": 1,
+    "idProduto": 1,
+    "tipo": "ENTRADA",
+    "qtdeMov": 20,
+    "precoUnit": 100.00,
+    "desconto": 0,
+    "precoFinal": 2000.00,
+    "formaPagamento": "CREDITO",
+    "statusCompra": "PAGA",
+    "data": "2026-08-10"
+}
+
+### 5) Confira: aumentou 20
+GET http://localhost:3000/produtos/consultarPorPk/1
+
+### 6) SAIDA maior que o estoque -> 403, não pode gravar a compra
+POST http://localhost:3000/compras/cadastrar
+Content-Type: application/json
+
+{
+    "idUsuario": 1,
+    "idProduto": 1,
+    "tipo": "SAIDA",
+    "qtdeMov": 999999,
+    "precoUnit": 100.00,
+    "desconto": 0,
+    "precoFinal": 100.00,
+    "formaPagamento": "DINHEIRO",
+    "statusCompra": "PENDENTE",
+    "data": "2026-08-10"
+}
+
+### 7) Confira: o estoque continua igual ao do passo 5 (rollback ok)
+GET http://localhost:3000/produtos/consultarPorPk/1
+
+
+### =====================================================================
+### VALIDAÇÕES DO CADASTRO DE COMPRA
+### =====================================================================
+
+### Tipo inválido -> 400
+POST http://localhost:3000/compras/cadastrar
+Content-Type: application/json
+
+{
+    "idUsuario": 1,
+    "idProduto": 1,
+    "tipo": "DEVOLUCAO",
+    "qtdeMov": 1,
+    "precoUnit": 100.00,
+    "desconto": 0,
+    "precoFinal": 100.00,
+    "formaPagamento": "DINHEIRO",
+    "statusCompra": "PAGA",
+    "data": "2026-08-10"
+}
+
+### Tipo ausente -> 400
+POST http://localhost:3000/compras/cadastrar
+Content-Type: application/json
+
+{
+    "idUsuario": 1,
+    "idProduto": 1,
+    "qtdeMov": 1,
+    "precoUnit": 100.00,
+    "desconto": 0,
+    "precoFinal": 100.00,
+    "formaPagamento": "DINHEIRO",
+    "statusCompra": "PAGA",
+    "data": "2026-08-10"
+}
+
+### Quantidade zero -> 400
+POST http://localhost:3000/compras/cadastrar
+Content-Type: application/json
+
+{
+    "idUsuario": 1,
+    "idProduto": 1,
+    "tipo": "SAIDA",
+    "qtdeMov": 0,
+    "precoUnit": 100.00,
+    "desconto": 0,
+    "precoFinal": 100.00,
+    "formaPagamento": "DINHEIRO",
+    "statusCompra": "PAGA",
+    "data": "2026-08-10"
+}
+
+### Quantidade negativa -> 400
+POST http://localhost:3000/compras/cadastrar
+Content-Type: application/json
+
+{
+    "idUsuario": 1,
+    "idProduto": 1,
+    "tipo": "SAIDA",
+    "qtdeMov": -5,
+    "precoUnit": 100.00,
+    "desconto": 0,
+    "precoFinal": 100.00,
+    "formaPagamento": "DINHEIRO",
+    "statusCompra": "PAGA",
+    "data": "2026-08-10"
+}
+
+### Quantidade quebrada -> 400
+POST http://localhost:3000/compras/cadastrar
+Content-Type: application/json
+
+{
+    "idUsuario": 1,
+    "idProduto": 1,
+    "tipo": "SAIDA",
+    "qtdeMov": 2.5,
+    "precoUnit": 100.00,
+    "desconto": 0,
+    "precoFinal": 100.00,
+    "formaPagamento": "DINHEIRO",
+    "statusCompra": "PAGA",
+    "data": "2026-08-10"
+}
+
+### Quantidade em texto -> 400
+POST http://localhost:3000/compras/cadastrar
+Content-Type: application/json
+
+{
+    "idUsuario": 1,
+    "idProduto": 1,
+    "tipo": "SAIDA",
+    "qtdeMov": "abc",
+    "precoUnit": 100.00,
+    "desconto": 0,
+    "precoFinal": 100.00,
+    "formaPagamento": "DINHEIRO",
+    "statusCompra": "PAGA",
+    "data": "2026-08-10"
+}
+
+### Produto inexistente -> 404
+POST http://localhost:3000/compras/cadastrar
+Content-Type: application/json
+
+{
+    "idUsuario": 1,
+    "idProduto": 999999,
+    "tipo": "SAIDA",
+    "qtdeMov": 1,
+    "precoUnit": 100.00,
+    "desconto": 0,
+    "precoFinal": 100.00,
+    "formaPagamento": "DINHEIRO",
+    "statusCompra": "PAGA",
+    "data": "2026-08-10"
+}
+
+### Usuário inexistente (chave estrangeira) -> 500
+POST http://localhost:3000/compras/cadastrar
+Content-Type: application/json
+
+{
+    "idUsuario": 999999,
+    "idProduto": 1,
+    "tipo": "ENTRADA",
+    "qtdeMov": 1,
+    "precoUnit": 100.00,
+    "desconto": 0,
+    "precoFinal": 100.00,
+    "formaPagamento": "DINHEIRO",
+    "statusCompra": "PAGA",
+    "data": "2026-08-10"
+}
+
+### Forma de pagamento fora do ENUM -> 500
+POST http://localhost:3000/compras/cadastrar
+Content-Type: application/json
+
+{
+    "idUsuario": 1,
+    "idProduto": 1,
+    "tipo": "ENTRADA",
+    "qtdeMov": 1,
+    "precoUnit": 100.00,
+    "desconto": 0,
+    "precoFinal": 100.00,
+    "formaPagamento": "PIX",
+    "statusCompra": "PAGA",
+    "data": "2026-08-10"
+}
+
+
+### =====================================================================
+### RELATÓRIOS (Views SQL)
+### =====================================================================
+
+### Produtos críticos (histórico de saídas)
+GET http://localhost:3000/relatorio/produtos-criticos
+
+### Volume de compras por categoria
+GET http://localhost:3000/relatorio/volume-compras
+
+
+### Rota inexistente -> 404 do Express
+GET http://localhost:3000/rota/que/nao/existe

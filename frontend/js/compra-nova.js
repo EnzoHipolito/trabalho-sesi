@@ -1,6 +1,7 @@
 const formCompra = document.getElementById('formCompra');
 const selectUsuario = document.getElementById('idUsuario');
 const selectProduto = document.getElementById('idProduto');
+const mensagem = document.getElementById('mensagem');
 
 function carregarSelects() {
     return fetch('http://localhost:3000/usuarios/listar')
@@ -44,6 +45,8 @@ formCompra.addEventListener('submit', (e) => {
     };
 
     let ok = false;
+    mensagem.textContent = '';
+    mensagem.className = 'bulk-status';
 
     fetch('http://localhost:3000/compras/cadastrar', {
         method: 'POST',
@@ -56,12 +59,16 @@ formCompra.addEventListener('submit', (e) => {
     })
     .then(dados => {
         if (!ok) {
+            mensagem.textContent = dados.message;
+            mensagem.className = 'bulk-status erro';
             console.error('Erro ao cadastrar compra:', dados.message);
             return;
         }
         window.location.href = 'compras.html';
     })
     .catch(err => {
+        mensagem.textContent = 'Erro ao cadastrar compra!';
+        mensagem.className = 'bulk-status erro';
         console.error('Erro ao cadastrar compra:', err);
     });
 });
